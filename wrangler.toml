@@ -1,0 +1,11 @@
+name = "Innospark"
+compatibility_date = "2024-01-01"
+
+# For Cloudflare Pages
+pages_build_output_dir = ".vercel/output/static"
+
+# Optional: if using functions
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NODE_ENV = "production"
