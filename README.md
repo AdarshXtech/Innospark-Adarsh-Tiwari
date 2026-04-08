@@ -15,14 +15,14 @@ booking tickets to, and managing attendance at nearby college fests,
 pop-ups, and community events. 
 
 ### Team Leader
-Name: ADARSH TIWARI
-Phone: [Phone Number]
+     Name: ADARSH TIWARI
+     Phone: [Phone Number]
 
 ### Team Members & Roles
-Name	        Role
-RUDRANSH SINGH	[Role – e.g., Frontend Developer]
-OM JAISWAL	    [Role – Backend Developer]
-ADARSH YADAV	[Role – AI/ML Engineer]
+     Name	        Role
+     RUDRANSH SINGH	[Role – e.g., Frontend Developer]
+     OM JAISWAL	    [Role – Backend Developer]
+     ADARSH YADAV	[Role – AI/ML Engineer]
 
 ### Project Description
 LocalTix empowers students and communities by making event discovery and participation effortless. It helps organizers increase visibility, improve event management, and boost engagement. By digitizing hyper-local events, the platform fosters stronger community connections and enhances campus and local culture.
