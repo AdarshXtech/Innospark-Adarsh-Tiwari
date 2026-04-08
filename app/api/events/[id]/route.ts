@@ -1,15 +1,18 @@
+export const runtime = 'edge'
 import { supabase } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params
+
     const { data: event, error: eventError } = await supabase
       .from('events')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (eventError) throw eventError
@@ -17,7 +20,7 @@ export async function GET(
     const { data: tiers, error: tiersError } = await supabase
       .from('ticket_tiers')
       .select('*')
-      .eq('event_id', params.id)
+      .eq('event_id', id)
 
     if (tiersError) throw tiersError
 
@@ -29,15 +32,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params
     const body = await request.json()
 
     const { data, error } = await supabase
       .from('events')
       .update(body)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
 
     if (error) throw error

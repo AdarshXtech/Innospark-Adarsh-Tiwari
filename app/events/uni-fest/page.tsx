@@ -1,3 +1,4 @@
+export const runtime = 'edge'
 const PERFORMANCES = [
   {
     time: '12:00 PM',

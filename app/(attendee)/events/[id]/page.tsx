@@ -1,3 +1,4 @@
+export const runtime = 'edge'
 export default function EventDetailsPage() {
   return (
     <div className="min-h-screen bg-surface">

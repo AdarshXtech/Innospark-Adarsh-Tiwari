@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 const EVENTS = [
   { id: 1, name: 'Monsoon Beats Festival', city: 'Mumbai', x: 22, y: 62, tickets: 847, selling: true, tag: 'Music' },
@@ -107,7 +107,7 @@ export default function TonightsPulse() {
   const [hoveredId, setHoveredId] = useState<number | null>(null)
   const [tickerIndex, setTickerIndex] = useState(0)
   const [totalBooked, setTotalBooked] = useState(3847)
-  const tickerRef = useRef<HTMLDivElement>(null)
+  // const _tickerRef = useRef<HTMLDivElement>(null)
 
   const hoveredEvent = EVENTS.find((e) => e.id === hoveredId)
 

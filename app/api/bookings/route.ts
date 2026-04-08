@@ -1,3 +1,4 @@
+export const runtime = 'edge'
 import { supabase } from '@/lib/supabase'
 import { createRazorpayOrder } from '@/lib/razorpay'
 import { NextRequest, NextResponse } from 'next/server'
