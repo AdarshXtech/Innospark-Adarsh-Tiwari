@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import { createServerClient } from '@supabase/ssr'
 import { createRazorpayOrder } from '@/lib/razorpay'
 import { NextRequest, NextResponse } from 'next/server'
