@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import { redirect } from 'next/navigation'
 import TonightsPulse from '../components/TonightsPulse'
 import LiveClock from '../components/LiveClock'
 
@@ -40,6 +41,10 @@ export default async function Home() {
     }
   )
   const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/explore')
+  }
 
   return (
     <main className="min-h-screen bg-surface overflow-hidden">

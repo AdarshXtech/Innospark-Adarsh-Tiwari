@@ -1,6 +1,6 @@
-export const runtime = 'edge'
-import { supabase } from '@/lib/supabase'
+import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -19,29 +19,40 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(data)
-  } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error?.message || String(error) }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const authClient = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll() },
+          setAll() {},
+        },
+      }
+    )
+
+    const { data: { user } } = await authClient.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
 
-    const { data, error } = await supabase
+    const { data, error } = await authClient
       .from('events')
-      .insert([
-        {
-          ...body,
-          status: 'draft',
-        },
-      ])
+      .insert([{ ...body, organizer_id: user.id }])
       .select()
 
     if (error) throw error
 
     return NextResponse.json(data[0], { status: 201 })
-  } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 })
+  } catch (error: any) {
+    return NextResponse.json({ error: error?.message || String(error) }, { status: 500 })
   }
 }

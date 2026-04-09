@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 declare global {
@@ -9,26 +9,38 @@ declare global {
   }
 }
 
-const EVENT = {
-  title: 'Monsoon Beats Festival',
-  date: 'APR 20, 2026 · 7:00 PM',
-  venue: 'Bandra Amphitheatre, Mumbai',
-  price: 799,
-  platformFee: 20,
-  tierId: 'tier_default',
+const PLATFORM_FEE = 20
+
+interface Event {
+  id: string
+  title: string
+  event_date: string
+  venue: string
+  ticket_tiers: { id: string; name: string; price: number }[]
 }
 
 export default function CheckoutPage() {
   const params = useParams()
   const eventId = params.id as string
 
+  const [event, setEvent] = useState<Event | null>(null)
+  const [eventLoading, setEventLoading] = useState(true)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const total = EVENT.price + EVENT.platformFee
+  useEffect(() => {
+    fetch(`/api/events/${eventId}`)
+      .then(r => r.json())
+      .then(data => { setEvent(data); setEventLoading(false) })
+      .catch(() => { setError('Failed to load event.'); setEventLoading(false) })
+  }, [eventId])
+
+  const tier = event?.ticket_tiers?.[0]
+  const price = tier?.price ?? 0
+  const total = price + PLATFORM_FEE
 
   const loadRazorpay = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -46,6 +58,10 @@ export default function CheckoutPage() {
       setError('Please fill in all contact details.')
       return
     }
+    if (!event) {
+      setError('Event data not loaded. Please refresh.')
+      return
+    }
     setError('')
     setLoading(true)
 
@@ -59,23 +75,22 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           eventId,
-          ticketTierId: EVENT.tierId,
+          ticketTierId: tier?.id ?? null,
           quantity: 1,
-          userId: null, // server will get from session
         }),
       })
 
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to create order')
 
-      const { razorpayOrder, booking } = data
+      const { razorpayOrder } = data
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: razorpayOrder.amount,
         currency: 'INR',
         name: 'LocalTix',
-        description: EVENT.title,
+        description: event.title,
         order_id: razorpayOrder.id,
         prefill: { name, email, contact: phone },
         theme: { color: '#7c6af7' },
@@ -109,6 +124,22 @@ export default function CheckoutPage() {
       setError(err.message || 'Something went wrong')
       setLoading(false)
     }
+  }
+
+  if (eventLoading) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <p className="text-on_surface_variant text-sm">Loading event...</p>
+      </div>
+    )
+  }
+
+  if (!event) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <p className="text-red-400 text-sm">{error || 'Event not found.'}</p>
+      </div>
+    )
   }
 
   return (
@@ -194,19 +225,19 @@ export default function CheckoutPage() {
                   className="h-24 rounded-lg mb-3"
                   style={{ background: 'linear-gradient(135deg, #141821 0%, #1e2438 100%)' }}
                 />
-                <h3 className="font-editorial text-lg text-on_surface leading-tight mb-1">{EVENT.title}</h3>
-                <p className="label-micro text-on_surface_variant">{EVENT.date}</p>
-                <p className="label-micro text-on_surface_variant mt-0.5">{EVENT.venue}</p>
+                <h3 className="font-editorial text-lg text-on_surface leading-tight mb-1">{event.title}</h3>
+                <p className="label-micro text-on_surface_variant">{event.event_date}</p>
+                <p className="label-micro text-on_surface_variant mt-0.5">{event.venue}</p>
               </div>
 
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-on_surface_variant text-sm">General Admission × 1</span>
-                  <span className="text-on_surface text-sm">₹{EVENT.price}</span>
+                  <span className="text-on_surface_variant text-sm">{tier?.name ?? 'General Admission'} × 1</span>
+                  <span className="text-on_surface text-sm">₹{price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-on_surface_variant text-sm">Platform fee</span>
-                  <span className="text-on_surface text-sm">₹{EVENT.platformFee}</span>
+                  <span className="text-on_surface text-sm">₹{PLATFORM_FEE}</span>
                 </div>
               </div>
 

@@ -55,10 +55,49 @@ export default function CreateEventPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!title || !startDate) return
     setSubmitting(true)
-    await new Promise((r) => setTimeout(r, 1400))
-    setSubmitting(false)
-    alert('Event created!')
+
+    try {
+      const eventDatetime = `${startDate}T${startTime}:00`
+
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          event_date: eventDatetime,
+          location: location,
+          status: 'published',
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error) || 'Failed to create event')
+
+      // Always create a default ticket tier
+      if (data.id) {
+        await fetch('/api/events/' + data.id + '/tiers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_id: data.id,
+            name: 'General Admission',
+            price: ticketPrice ? parseFloat(ticketPrice) : 0,
+            capacity: capacity ? parseInt(capacity) : null,
+          }),
+        })
+      }
+
+      window.location.href = '/explore'
+    } catch (err: any) {
+      alert(err.message || 'Something went wrong')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   // Shared style tokens

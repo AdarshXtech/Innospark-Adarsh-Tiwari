@@ -1,23 +1,30 @@
-const EVENT_IMAGES: Record<string, string> = {
-  'Monsoon Beats Festival': 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600&q=80',
-  'Jazz Under the Stars': 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=600&q=80',
-  'Tech Summit 2026': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
-  'Indie Film Showcase': 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&q=80',
-  'Street Food Carnival': 'https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?w=600&q=80',
-  'Comedy Night Live': 'https://images.unsplash.com/photo-1527224857830-43a7acc85260?w=600&q=80',
-}
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
-export default function ExplorePage() {
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80'
+
+export default async function ExplorePage() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll() {},
+      },
+    }
+  )
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data: events } = await supabase
+    .from('events')
+    .select('id, title, event_date, location, category, banner_url, ticket_tiers(price)')
+    .eq('status', 'published')
+    .order('event_date', { ascending: true })
+
   const categories = ['All', 'Music', 'Tech', 'Food', 'Comedy', 'Wellness', 'Art', 'Sports']
-
-  const events = [
-    { title: 'Monsoon Beats Festival', meta: 'APR 20 · MUMBAI', price: '₹799', tag: 'Music', match: '98%' },
-    { title: 'Jazz Under the Stars', meta: 'APR 12 · DELHI', price: '₹499', tag: 'Jazz', match: '96%' },
-    { title: 'Tech Summit 2026', meta: 'APR 15 · PUNE', price: '₹999', tag: 'Tech', match: '88%' },
-    { title: 'Indie Film Showcase', meta: 'APR 14 · BANGALORE', price: '₹299', tag: 'Film', match: '91%' },
-    { title: 'Street Food Carnival', meta: 'APR 22 · HYDERABAD', price: '₹149', tag: 'Food', match: '85%' },
-    { title: 'Comedy Night Live', meta: 'APR 18 · CHENNAI', price: '₹349', tag: 'Comedy', match: '93%' },
-  ]
 
   return (
     <div className="min-h-screen bg-surface">
@@ -27,13 +34,17 @@ export default function ExplorePage() {
         <div className="flex items-center gap-6">
           <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm transition-colors">My Tickets</a>
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm transition-colors">Admin</a>
-          <a href="/login" className="label-micro text-primary hover:text-primary_container transition-colors">Sign In</a>
+          <a href="/create-event" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">+ Create Event</a>
+          {user ? (
+            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm transition-colors">{user.email}</a>
+          ) : (
+            <a href="/login" className="label-micro text-primary hover:text-primary_container transition-colors">Sign In</a>
+          )}
         </div>
       </nav>
 
       {/* Hero banner */}
       <div className="relative pt-32 pb-14 px-8 lg:px-20 overflow-hidden">
-        {/* Background glow — matches homepage style */}
         <div
           className="absolute top-0 right-0 w-[600px] h-[400px] rounded-full pointer-events-none"
           style={{ background: 'radial-gradient(circle, #7c6af7 0%, transparent 70%)', opacity: 0.1 }}
@@ -79,56 +90,68 @@ export default function ExplorePage() {
           <div className="lg:col-span-3">
             <div className="flex items-center justify-between mb-6">
               <p className="text-on_surface_variant text-sm">
-                <span className="text-on_surface font-semibold">6</span> events near you
+                <span className="text-on_surface font-semibold">{events?.length ?? 0}</span> events near you
               </p>
               <div className="flex items-center gap-2">
                 <span className="label-micro text-on_surface_variant">Sort:</span>
                 <select className="input-editorial text-xs px-3 py-1.5 rounded-lg">
-                  <option>Best Match</option>
                   <option>Date</option>
                   <option>Price</option>
                 </select>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {events.map((event, idx) => (
-                <a
-                  key={event.title}
-                  href="/events/1"
-                  className={`card-event rounded-2xl overflow-hidden block group animate-fade-up delay-${(idx % 6 + 1) * 100}`}
-                >
-                  <div className="h-40 img-zoom relative overflow-hidden">
-                    <img
-                      src={EVENT_IMAGES[event.title] || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80'}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-surface_container/80 to-transparent" />
-                    <div className="absolute bottom-2 left-2 flex gap-1.5">
-                      <span className="label-micro text-on_surface_variant bg-surface_container/80 backdrop-blur px-2 py-1 rounded-full">
-                        {event.tag}
-                      </span>
-                    </div>
-                    <div className="absolute top-2 right-2">
-                      <span className="label-micro text-primary bg-surface_container_lowest/80 backdrop-blur px-2 py-0.5 rounded-full">
-                        {event.match}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-editorial text-lg text-on_surface mb-1 group-hover:text-primary_container transition-colors leading-tight">
-                      {event.title}
-                    </h3>
-                    <p className="label-micro text-on_surface_variant mb-3">{event.meta}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-on_surface font-semibold text-sm">{event.price}</span>
-                      <span className="text-xs text-primary font-medium">{event.match} Match</span>
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
+            {!events || events.length === 0 ? (
+              <div className="col-span-3 py-20 text-center">
+                <p className="text-on_surface_variant text-sm">No events found. Check back soon.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {events.map((event, idx) => {
+                  const price = (event.ticket_tiers as any)?.[0]?.price
+                  const dateStr = event.event_date
+                    ? new Date(event.event_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : ''
+                  return (
+                    <a
+                      key={event.id}
+                      href={`/checkout/${event.id}`}
+                      className={`card-event rounded-2xl overflow-hidden block group animate-fade-up delay-${(idx % 6 + 1) * 100}`}
+                    >
+                      <div className="h-40 img-zoom relative overflow-hidden">
+                        <img
+                          src={event.banner_url || FALLBACK_IMAGE}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-surface_container/80 to-transparent" />
+                        {event.category && (
+                          <div className="absolute bottom-2 left-2">
+                            <span className="label-micro text-on_surface_variant bg-surface_container/80 backdrop-blur px-2 py-1 rounded-full">
+                              {event.category}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-editorial text-lg text-on_surface mb-1 group-hover:text-primary_container transition-colors leading-tight">
+                          {event.title}
+                        </h3>
+                        <p className="label-micro text-on_surface_variant mb-3">
+                          {dateStr}{event.location ? ` · ${event.location}` : ''}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-on_surface font-semibold text-sm">
+                            {price != null ? `₹${price}` : 'Free'}
+                          </span>
+                          <span className="text-on_surface_variant text-xs group-hover:text-primary transition-colors">→</span>
+                        </div>
+                      </div>
+                    </a>
+                  )
+                })}
+              </div>
+            )}
           </div>
 
           {/* Filters sidebar */}
