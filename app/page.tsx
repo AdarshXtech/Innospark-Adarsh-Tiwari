@@ -56,7 +56,7 @@ export default async function Home() {
           <a href="/explore" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Explore</a>
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Admin</a>
           {user ? (
-            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">{user.email}</a>
+            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">{user?.email}</a>
           ) : (
             <>
               <a href="/login" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Sign In</a>
