@@ -4,19 +4,127 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================= */
+/* Day / Night CSS variables                     */
+/* ============================================= */
+
+:root, [data-theme="night"] {
+  --bg:               #0e1117;
+  --bg-grad-1:        rgba(124, 106, 247, 0.07);
+  --bg-grad-2:        rgba(79, 63, 224, 0.05);
+  --text:             #e2e4f0;
+  --text-muted:       #6b7299;
+
+  /* Surfaces */
+  --surface:          #0e1117;
+  --surface-low:      #141821;
+  --surface-mid:      #1e2438;
+  --surface-high:     #222840;
+  --surface-highest:  #2c334f;
+
+  /* Nav */
+  --nav-bg:           rgba(14, 17, 23, 0.85);
+  --nav-border:       rgba(124, 106, 247, 0.15);
+  --nav-shadow:       rgba(0, 0, 0, 0.4);
+
+  /* Cards */
+  --card-bg-from:     #1e2438;
+  --card-bg-to:       #111624;
+  --card-highlight:   rgba(180, 170, 255, 0.1);
+  --card-shadow:      rgba(0, 0, 0, 0.5);
+
+  /* Input */
+  --input-bg-from:    #0a0d14;
+  --input-bg-to:      #111624;
+  --input-text:       #e2e4f0;
+  --input-placeholder:#4a5070;
+
+  /* Chip */
+  --chip-bg-from:     #1e2438;
+  --chip-bg-to:       #161b2a;
+  --chip-active-from: #2a2450;
+  --chip-active-to:   #1e1a40;
+
+  /* Skeuo */
+  --skeuo-raised-from:#222840;
+  --skeuo-raised-to:  #141821;
+  --skeuo-inset-from: #0e1117;
+  --skeuo-inset-to:   #141821;
+
+  /* Toggle */
+  --toggle-bg:        rgba(30, 36, 56, 0.9);
+  --toggle-border:    rgba(124, 106, 247, 0.25);
+  --toggle-text:      #b8b0ff;
+  --toggle-auto-bg:   rgba(124, 106, 247, 0.15);
+  --toggle-reset-bg:  rgba(30, 36, 56, 0.8);
+  --toggle-reset-text:#7c6af7;
+}
+
+[data-theme="day"] {
+  --bg:               #f0f2f8;
+  --bg-grad-1:        rgba(124, 106, 247, 0.05);
+  --bg-grad-2:        rgba(79, 63, 224, 0.04);
+  --text:             #1a1a2e;
+  --text-muted:       #6b7299;
+
+  /* Surfaces */
+  --surface:          #f0f2f8;
+  --surface-low:      #e4e8f2;
+  --surface-mid:      #d8ddef;
+  --surface-high:     #cdd3e8;
+  --surface-highest:  #bfc7e0;
+
+  /* Nav */
+  --nav-bg:           rgba(240, 242, 248, 0.88);
+  --nav-border:       rgba(124, 106, 247, 0.2);
+  --nav-shadow:       rgba(0, 0, 0, 0.08);
+
+  /* Cards */
+  --card-bg-from:     #e8ecf8;
+  --card-bg-to:       #dce2f4;
+  --card-highlight:   rgba(255, 255, 255, 0.7);
+  --card-shadow:      rgba(100, 110, 160, 0.15);
+
+  /* Input */
+  --input-bg-from:    #dce2f4;
+  --input-bg-to:      #e4e8f2;
+  --input-text:       #1a1a2e;
+  --input-placeholder:#8890b0;
+
+  /* Chip */
+  --chip-bg-from:     #e4e8f4;
+  --chip-bg-to:       #dce2f0;
+  --chip-active-from: #dbd6f8;
+  --chip-active-to:   #d0cbf4;
+
+  /* Skeuo */
+  --skeuo-raised-from:#edf0fa;
+  --skeuo-raised-to:  #dce2f4;
+  --skeuo-inset-from: #d4daf0;
+  --skeuo-inset-to:   #dce2f4;
+
+  /* Toggle */
+  --toggle-bg:        rgba(255, 255, 255, 0.9);
+  --toggle-border:    rgba(124, 106, 247, 0.3);
+  --toggle-text:      #4f3fe0;
+  --toggle-auto-bg:   rgba(124, 106, 247, 0.1);
+  --toggle-reset-bg:  rgba(255, 255, 255, 0.8);
+  --toggle-reset-text:#7c6af7;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #0e1117;
-  color: #e2e4f0;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  /* Subtle linen-like texture via repeating noise */
+  transition: background-color 0.5s ease, color 0.5s ease;
   background-image:
-    radial-gradient(ellipse at 20% 0%, rgba(124, 106, 247, 0.07) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 100%, rgba(79, 63, 224, 0.05) 0%, transparent 50%);
+    radial-gradient(ellipse at 20% 0%, var(--bg-grad-1) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, var(--bg-grad-2) 0%, transparent 50%);
 }
 
 /* ============================================= */
@@ -25,24 +133,23 @@ body {
 
 /* Raised / embossed surface — feels like a physical card */
 .skeuo-raised {
-  background: linear-gradient(160deg, #222840 0%, #1a1f2e 60%, #141821 100%);
+  background: linear-gradient(160deg, var(--skeuo-raised-from) 0%, var(--surface-low) 60%, var(--surface-low) 100%);
   box-shadow:
-    /* outer highlight (top-left light) */
-    inset 0 1px 0 rgba(180, 170, 255, 0.12),
-    /* inner shadow (bottom-right dark) */
-    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
-    /* drop shadow for physical lift */
-    0 4px 16px rgba(0, 0, 0, 0.5),
-    0 1px 4px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 4px 16px var(--card-shadow),
+    0 1px 4px var(--card-shadow);
+  transition: background 0.5s ease, box-shadow 0.5s ease;
 }
 
 /* Inset / pressed surface */
 .skeuo-inset {
-  background: linear-gradient(160deg, #0e1117 0%, #141821 100%);
+  background: linear-gradient(160deg, var(--skeuo-inset-from) 0%, var(--skeuo-inset-to) 100%);
   box-shadow:
-    inset 0 2px 6px rgba(0, 0, 0, 0.7),
-    inset 0 1px 2px rgba(0, 0, 0, 0.5),
-    inset 0 -1px 0 rgba(180, 170, 255, 0.06);
+    inset 0 2px 6px rgba(0, 0, 0, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2),
+    inset 0 -1px 0 rgba(124, 106, 247, 0.06);
+  transition: background 0.5s ease;
 }
 
 /* Leather-like panel — subtle grain + deep edges */
@@ -52,15 +159,16 @@ body {
       0deg,
       transparent,
       transparent 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(0, 0, 0, 0.03) 4px
+      rgba(0, 0, 0, 0.02) 2px,
+      rgba(0, 0, 0, 0.02) 4px
     ),
-    linear-gradient(160deg, #1e2438 0%, #171c2c 50%, #111624 100%);
+    linear-gradient(160deg, var(--surface-mid) 0%, var(--surface-low) 50%, var(--surface-low) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
-    0 8px 32px rgba(0, 0, 0, 0.6),
-    0 2px 8px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+    0 8px 32px var(--card-shadow),
+    0 2px 8px var(--card-shadow);
+  transition: background 0.5s ease;
 }
 
 /* ============================================= */
@@ -68,12 +176,13 @@ body {
 /* ============================================= */
 
 .glass-nav {
-  background: rgba(14, 17, 23, 0.85);
+  background: var(--nav-bg);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   box-shadow:
-    inset 0 -1px 0 rgba(124, 106, 247, 0.15),
-    0 4px 24px rgba(0, 0, 0, 0.4);
+    inset 0 -1px 0 var(--nav-border),
+    0 4px 24px var(--nav-shadow);
+  transition: background 0.5s ease, box-shadow 0.5s ease;
 }
 
 /* ============================================= */
@@ -149,29 +258,29 @@ body {
 /* ============================================= */
 
 .input-editorial {
-  background: linear-gradient(170deg, #0a0d14 0%, #111624 100%);
+  background: linear-gradient(170deg, var(--input-bg-from) 0%, var(--input-bg-to) 100%);
   border: none;
   box-shadow:
-    inset 0 2px 5px rgba(0, 0, 0, 0.6),
-    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 2px 5px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.15),
     inset 0 -1px 0 rgba(124, 106, 247, 0.1);
   border-radius: 0.6rem;
-  color: #e2e4f0;
-  transition: box-shadow 0.2s ease;
+  color: var(--input-text);
+  transition: box-shadow 0.2s ease, background 0.5s ease, color 0.5s ease;
   outline: none;
 }
 
 .input-editorial:focus {
   box-shadow:
-    inset 0 2px 5px rgba(0, 0, 0, 0.6),
-    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 2px 5px rgba(0, 0, 0, 0.2),
+    inset 0 1px 2px rgba(0, 0, 0, 0.15),
     inset 0 -1px 0 rgba(124, 106, 247, 0.5),
     0 0 0 2px rgba(124, 106, 247, 0.2),
     0 0 16px rgba(124, 106, 247, 0.12);
 }
 
 .input-editorial::placeholder {
-  color: #4a5070;
+  color: var(--input-placeholder);
 }
 
 /* ============================================= */
@@ -179,22 +288,22 @@ body {
 /* ============================================= */
 
 .card-event {
-  background: linear-gradient(155deg, #1e2438 0%, #171c2c 60%, #111624 100%);
+  background: linear-gradient(155deg, var(--card-bg-from) 0%, var(--card-bg-to) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
-    0 4px 20px rgba(0, 0, 0, 0.5),
-    0 1px 4px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 4px 20px var(--card-shadow),
+    0 1px 4px var(--card-shadow);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background 0.5s ease;
 }
 
 .card-event:hover {
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.18),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
-    0 8px 40px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 8px 40px var(--card-shadow),
     0 0 32px rgba(124, 106, 247, 0.12),
-    0 1px 4px rgba(0, 0, 0, 0.3);
+    0 1px 4px var(--card-shadow);
   transform: translateY(-3px);
 }
 
@@ -204,19 +313,19 @@ body {
 
 /* AI chip — stamped metal feel */
 .ai-pulse-chip {
-  background: linear-gradient(155deg, #1e2438 0%, #161b2a 100%);
+  background: linear-gradient(155deg, var(--chip-bg-from) 0%, var(--chip-bg-to) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.1),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.3);
-  transition: all 0.2s ease;
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 2px 8px var(--card-shadow);
+  transition: all 0.2s ease, background 0.5s ease;
 }
 
 .ai-pulse-chip.active {
-  background: linear-gradient(155deg, #2a2450 0%, #1e1a40 100%);
+  background: linear-gradient(155deg, var(--chip-active-from) 0%, var(--chip-active-to) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.15),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     0 0 0 1px rgba(124, 106, 247, 0.5),
     0 0 14px rgba(124, 106, 247, 0.2);
 }
@@ -392,13 +501,14 @@ body {
 }
 
 .concierge-panel {
-  background: linear-gradient(160deg, #1e2438 0%, #171c2c 60%, #111624 100%);
+  background: linear-gradient(160deg, var(--surface-mid) 0%, var(--surface-low) 60%, var(--surface-low) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(124, 106, 247, 0.15),
-    0 24px 80px rgba(0, 0, 0, 0.7),
+    0 24px 80px var(--card-shadow),
     0 0 80px rgba(124, 106, 247, 0.1);
+  transition: background 0.5s ease;
 }
 
 .concierge-panel::before {
@@ -452,3 +562,49 @@ body {
 .concierge-match-arc {
   transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ============================================= */
+/* Theme toggle button                           */
+/* ============================================= */
+
+.theme-toggle-btn {
+  background: var(--toggle-bg);
+  border: 1px solid var(--toggle-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: background 0.5s ease, border-color 0.5s ease, transform 0.15s ease;
+}
+.theme-toggle-btn:hover { transform: translateY(-1px); }
+.theme-toggle-btn:active { transform: translateY(0); }
+
+.theme-toggle-label {
+  color: var(--toggle-text);
+  transition: color 0.5s ease;
+}
+
+.theme-toggle-auto {
+  background: var(--toggle-auto-bg);
+  color: var(--toggle-text);
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+.theme-toggle-reset {
+  background: var(--toggle-reset-bg);
+  color: var(--toggle-reset-text);
+  border: 1px solid var(--toggle-border);
+  backdrop-filter: blur(16px);
+  transition: background 0.5s ease;
+}
+
+/* ============================================= */
+/* Tailwind surface token overrides              */
+/* ============================================= */
+
+.bg-surface               { background-color: var(--surface) !important; transition: background-color 0.5s ease; }
+.bg-surface_container_low { background-color: var(--surface-low) !important; transition: background-color 0.5s ease; }
+.bg-surface_container     { background-color: var(--surface-mid) !important; transition: background-color 0.5s ease; }
+.bg-surface_container_high{ background-color: var(--surface-high) !important; transition: background-color 0.5s ease; }
+.bg-surface_bright        { background-color: var(--surface-high) !important; transition: background-color 0.5s ease; }
+.text-on_surface          { color: var(--text) !important; transition: color 0.5s ease; }
+.text-on_surface_variant  { color: var(--text-muted) !important; transition: color 0.5s ease; }

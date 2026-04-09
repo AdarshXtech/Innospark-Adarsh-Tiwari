@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import AIConcierge from '../components/AIConcierge'
+import ThemeProvider from '../components/ThemeProvider'
+import ThemeToggle from '../components/ThemeToggle'
 
 export const metadata: Metadata = {
   title: 'LocalTix — Discover & Book Local Events',
@@ -15,8 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased bg-surface text-on_surface min-h-screen">
-        {children}
-        <AIConcierge />
+        <ThemeProvider>
+          {children}
+          <AIConcierge />
+          <ThemeToggle />
+        </ThemeProvider>
       </body>
     </html>
   )

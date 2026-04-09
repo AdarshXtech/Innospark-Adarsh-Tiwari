@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import TonightsPulse from '../components/TonightsPulse'
+import LiveClock from '../components/LiveClock'
 
 const FEATURED_EVENTS = [
   {
@@ -46,6 +47,7 @@ export default async function Home() {
       <nav className="glass-nav fixed top-0 left-0 right-0 z-50 px-8 py-4 flex items-center justify-between">
         <span className="font-editorial text-xl text-on_surface tracking-tight">LocalTix</span>
         <div className="flex items-center gap-6">
+          <LiveClock />
           <a href="/explore" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Explore</a>
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Admin</a>
           {user ? (
