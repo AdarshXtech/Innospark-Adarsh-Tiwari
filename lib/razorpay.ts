@@ -25,7 +25,7 @@ export async function createRazorpayOrder(
   receipt: string
 ): Promise<RazorpayOrder> {
   const response = await razorpayInstance.post('/orders', {
-    amount,
+    amount: amount * 100, // Razorpay expects paise
     currency: 'INR',
     receipt,
   })
@@ -40,7 +40,7 @@ export async function verifyPayment(
   const crypto = require('crypto')
   const body = `${orderId}|${paymentId}`
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET!)
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
     .update(body)
     .digest('hex')
 

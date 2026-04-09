@@ -1,3 +1,5 @@
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 import TonightsPulse from '../components/TonightsPulse'
 
 const FEATURED_EVENTS = [
@@ -24,7 +26,20 @@ const FEATURED_EVENTS = [
   },
 ]
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll() {},
+      },
+    }
+  )
+  const { data: { user } } = await supabase.auth.getUser()
+
   return (
     <main className="min-h-screen bg-surface overflow-hidden">
       {/* Nav */}
@@ -33,8 +48,14 @@ export default function Home() {
         <div className="flex items-center gap-6">
           <a href="/explore" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Explore</a>
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Admin</a>
-          <a href="/login" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Sign In</a>
-          <a href="/signup" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">Get Started</a>
+          {user ? (
+            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">{user.email}</a>
+          ) : (
+            <>
+              <a href="/login" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Sign In</a>
+              <a href="/signup" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">Get Started</a>
+            </>
+          )}
         </div>
       </nav>
 
