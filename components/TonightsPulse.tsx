@@ -42,7 +42,7 @@ function PulseNode({ event, isHovered, onHover }: {
   onHover: (id: number | null) => void
 }) {
   const count = useLiveCount(event.tickets, event.selling)
-  const size = Math.max(8, Math.min(20, 8 + Math.log(count) * 1.6))
+  const dot = isHovered ? 5 : 3.5
 
   return (
     <g
@@ -50,55 +50,59 @@ function PulseNode({ event, isHovered, onHover }: {
       onMouseEnter={() => onHover(event.id)}
       onMouseLeave={() => onHover(null)}
     >
-      {/* Ripple rings — only on hot events */}
+      {/* Single subtle ripple for selling events */}
       {event.selling && (
-        <>
-          <circle
-            cx={`${event.x}%`}
-            cy={`${event.y}%`}
-            r={size + 6}
-            fill="none"
-            stroke="rgba(124,106,247,0.4)"
-            strokeWidth="1"
-            style={{
-              animation: 'pulse-ring 2s ease-out infinite',
-              transformOrigin: `${event.x}% ${event.y}%`,
-            }}
-          />
-          <circle
-            cx={`${event.x}%`}
-            cy={`${event.y}%`}
-            r={size + 12}
-            fill="none"
-            stroke="rgba(124,106,247,0.2)"
-            strokeWidth="1"
-            style={{
-              animation: 'pulse-ring 2s ease-out infinite 0.7s',
-              transformOrigin: `${event.x}% ${event.y}%`,
-            }}
-          />
-        </>
+        <circle
+          cx={`${event.x}%`}
+          cy={`${event.y}%`}
+          r={dot + 5}
+          fill="none"
+          stroke="rgba(124,106,247,0.35)"
+          strokeWidth="0.8"
+          style={{
+            animation: 'pulse-ring 2.4s ease-out infinite',
+            transformOrigin: `${event.x}% ${event.y}%`,
+          }}
+        />
       )}
 
-      {/* Glow halo */}
+      {/* White halo (iOS Maps pin style) */}
       <circle
         cx={`${event.x}%`}
         cy={`${event.y}%`}
-        r={size + 4}
-        fill={isHovered ? 'rgba(124,106,247,0.15)' : 'rgba(124,106,247,0.06)'}
-        style={{ transition: 'fill 0.3s ease' }}
+        r={dot + 1.5}
+        fill={isHovered ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.07)'}
+        style={{ transition: 'all 0.25s ease' }}
       />
 
       {/* Core dot */}
       <circle
         cx={`${event.x}%`}
         cy={`${event.y}%`}
-        r={size / 2}
-        fill={event.selling ? (isHovered ? '#7c6af7' : '#9580ff') : '#2c334f'}
-        stroke={isHovered ? 'rgba(184,176,255,0.8)' : 'rgba(124,106,247,0.4)'}
-        strokeWidth="1.5"
-        style={{ transition: 'all 0.3s ease', filter: event.selling ? 'drop-shadow(0 0 6px rgba(124,106,247,0.7))' : 'none' }}
+        r={dot}
+        fill={event.selling ? '#7c6af7' : '#3a4060'}
+        stroke="rgba(255,255,255,0.9)"
+        strokeWidth={isHovered ? 1.5 : 1}
+        style={{
+          transition: 'all 0.25s ease',
+          filter: event.selling ? `drop-shadow(0 0 ${isHovered ? 8 : 4}px rgba(124,106,247,0.9))` : 'none',
+        }}
       />
+
+      {/* City label */}
+      {isHovered && (
+        <text
+          x={`${event.x}%`}
+          y={`${event.y - 6}%`}
+          textAnchor="middle"
+          fill="white"
+          fontSize="3.2"
+          fontWeight="600"
+          style={{ letterSpacing: '0.02em' }}
+        >
+          {event.city}
+        </text>
+      )}
     </g>
   )
 }
@@ -166,35 +170,49 @@ export default function TonightsPulse() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Map */}
+          {/* Map — iOS Maps dark style */}
           <div
             className="lg:col-span-3 rounded-3xl overflow-hidden relative"
             style={{
-              background: 'radial-gradient(ellipse at 30% 60%, rgba(124,106,247,0.06) 0%, transparent 60%), #0e1117',
-              outline: '1px solid rgba(255,255,255,0.06)',
-              minHeight: '380px',
+              background: '#1c1c1e',
+              outline: '1px solid rgba(255,255,255,0.08)',
+              minHeight: '400px',
             }}
           >
-            {/* India silhouette — simplified path */}
             <svg
               viewBox="0 0 100 100"
               className="absolute inset-0 w-full h-full"
               preserveAspectRatio="xMidYMid meet"
             >
-              {/* Subtle grid lines */}
-              {[20, 40, 60, 80].map((v) => (
+              <defs>
+                <radialGradient id="mapGlow" cx="35%" cy="55%" r="50%">
+                  <stop offset="0%" stopColor="rgba(124,106,247,0.08)" />
+                  <stop offset="100%" stopColor="transparent" />
+                </radialGradient>
+              </defs>
+
+              {/* Base fill */}
+              <rect width="100" height="100" fill="url(#mapGlow)" />
+
+              {/* iOS Maps style road grid — curved, subtle */}
+              {[15, 28, 42, 57, 72, 86].map((v) => (
                 <g key={v}>
-                  <line x1={v} y1="0" x2={v} y2="100" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
-                  <line x1="0" y1={v} x2="100" y2={v} stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+                  <line x1={v} y1="0" x2={v} y2="100" stroke="rgba(255,255,255,0.04)" strokeWidth="0.6" />
+                  <line x1="0" y1={v} x2="100" y2={v} stroke="rgba(255,255,255,0.04)" strokeWidth="0.6" />
                 </g>
               ))}
 
-              {/* India outline — approximate */}
+              {/* Diagonal "highway" lines — iOS Maps style */}
+              <line x1="0" y1="30" x2="100" y2="70" stroke="rgba(255,255,255,0.03)" strokeWidth="1.2" />
+              <line x1="0" y1="60" x2="100" y2="20" stroke="rgba(255,255,255,0.03)" strokeWidth="1.2" />
+              <line x1="20" y1="0" x2="60" y2="100" stroke="rgba(255,255,255,0.025)" strokeWidth="0.8" />
+
+              {/* India outline */}
               <path
                 d="M30,20 L35,18 L42,20 L48,18 L55,20 L60,22 L65,25 L68,30 L66,35 L70,40 L68,45 L65,50 L62,55 L58,60 L55,65 L52,72 L48,78 L45,84 L42,88 L40,85 L38,80 L36,75 L32,70 L28,65 L24,60 L20,55 L18,50 L20,45 L18,40 L20,35 L22,30 L26,25 Z"
-                fill="rgba(255,255,255,0.025)"
-                stroke="rgba(255,255,255,0.08)"
-                strokeWidth="0.5"
+                fill="rgba(255,255,255,0.03)"
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="0.4"
               />
 
               {/* Event pulse nodes */}
@@ -208,47 +226,68 @@ export default function TonightsPulse() {
               ))}
             </svg>
 
-            {/* Hover tooltip */}
+            {/* iOS Maps style top bar */}
             <div
-              className="absolute bottom-5 left-5 right-5 rounded-2xl p-4 transition-all duration-300"
+              className="absolute top-4 left-4 right-4 rounded-2xl px-4 py-2.5 flex items-center gap-3"
               style={{
-                background: 'rgba(28,27,27,0.92)',
-                backdropFilter: 'blur(16px)',
+                background: 'rgba(44,44,46,0.85)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
                 outline: '1px solid rgba(255,255,255,0.08)',
-                opacity: hoveredEvent ? 1 : 0,
-                transform: hoveredEvent ? 'translateY(0)' : 'translateY(6px)',
               }}
             >
-              {hoveredEvent && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              <span className="text-xs text-white/40 font-medium">Events across India</span>
+              <div className="ml-auto flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="label-micro text-primary">Live</span>
+              </div>
+            </div>
+
+            {/* Hover tooltip — iOS Maps callout style */}
+            <div
+              className="absolute bottom-4 left-4 right-4 rounded-2xl p-4 transition-all duration-250"
+              style={{
+                background: 'rgba(44,44,46,0.92)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                outline: '1px solid rgba(255,255,255,0.1)',
+                opacity: hoveredEvent ? 1 : 0,
+                transform: hoveredEvent ? 'translateY(0) scale(1)' : 'translateY(4px) scale(0.98)',
+                pointerEvents: hoveredEvent ? 'auto' : 'none',
+              }}
+            >
+              {hoveredEvent ? (
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-editorial text-base text-on_surface leading-tight">{hoveredEvent.name}</p>
-                    <p className="label-micro text-on_surface_variant mt-1">{hoveredEvent.city} · {hoveredEvent.tag}</p>
+                    <p className="font-editorial text-base text-white leading-tight">{hoveredEvent.name}</p>
+                    <p className="label-micro mt-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{hoveredEvent.city} · {hoveredEvent.tag}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-editorial text-xl text-primary">{hoveredEvent.tickets.toLocaleString()}</p>
-                    <p className="label-micro text-on_surface_variant">
-                      {hoveredEvent.selling ? 'selling fast' : 'tickets left'}
+                    <p className="label-micro" style={{ color: hoveredEvent.selling ? '#9580ff' : 'rgba(255,255,255,0.4)' }}>
+                      {hoveredEvent.selling ? '🔥 selling fast' : 'tickets left'}
                     </p>
                   </div>
                 </div>
-              )}
-              {!hoveredEvent && (
-                <p className="label-micro text-on_surface_variant text-center">Hover a dot to see live activity</p>
-              )}
+              ) : null}
             </div>
 
-            {/* Legend */}
-            <div className="absolute top-5 right-5 flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary" style={{ boxShadow: '0 0 6px rgba(124,106,247,0.7)' }} />
-                <span className="label-micro text-on_surface_variant">Selling fast</span>
+            {/* Legend — bottom right when no hover */}
+            {!hoveredEvent && (
+              <div className="absolute bottom-4 right-4 flex flex-col gap-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary" style={{ boxShadow: '0 0 5px rgba(124,106,247,0.8)' }} />
+                  <span className="label-micro" style={{ color: 'rgba(255,255,255,0.4)' }}>Selling fast</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full" style={{ background: '#3a4060' }} />
+                  <span className="label-micro" style={{ color: 'rgba(255,255,255,0.4)' }}>Available</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-surface_container_highest" />
-                <span className="label-micro text-on_surface_variant">Available</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Right panel */}

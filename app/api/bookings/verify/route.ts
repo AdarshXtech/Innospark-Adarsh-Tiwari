@@ -1,4 +1,3 @@
-export const runtime = 'edge'
 import { supabase } from '@/lib/supabase'
 import { verifyPayment } from '@/lib/razorpay'
 import { sendBookingConfirmation } from '@/lib/resend'
