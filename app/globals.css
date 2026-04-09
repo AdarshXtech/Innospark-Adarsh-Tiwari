@@ -535,21 +535,21 @@ body {
 }
 
 .concierge-pick {
-  background: linear-gradient(155deg, #222840 0%, #1a1f30 100%);
+  background: linear-gradient(155deg, var(--surface-high) 0%, var(--surface-mid) 100%);
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.3);
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+    0 2px 8px var(--card-shadow);
   opacity: 0;
   animation: pick-in 0.5s ease-out forwards;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease;
 }
 
 .concierge-pick:hover {
   box-shadow:
-    inset 0 1px 0 rgba(180, 170, 255, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-    0 4px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 var(--card-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+    0 4px 16px var(--card-shadow),
     0 0 20px rgba(124, 106, 247, 0.12);
   transform: translateX(2px);
 }

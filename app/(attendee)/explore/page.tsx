@@ -32,22 +32,25 @@ export default function ExplorePage() {
       </nav>
 
       {/* Hero banner */}
-      <div className="relative h-52 overflow-hidden">
-        <img
-          src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1400&q=80"
-          alt="Explore Events"
-          className="w-full h-full object-cover"
+      <div className="relative pt-32 pb-14 px-8 lg:px-20 overflow-hidden">
+        {/* Background glow — matches homepage style */}
+        <div
+          className="absolute top-0 right-0 w-[600px] h-[400px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #7c6af7 0%, transparent 70%)', opacity: 0.1 }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-surface/60 to-surface" />
-        <div className="absolute inset-0 flex flex-col justify-end px-8 lg:px-20 pb-8">
-          <p className="label-micro text-primary mb-2 animate-slide-r">AI-Curated</p>
+        <div
+          className="absolute bottom-0 left-20 w-[300px] h-[300px] rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #4f3fe0 0%, transparent 70%)', opacity: 0.07 }}
+        />
+        <div className="relative z-10 max-w-7xl mx-auto">
+          <p className="label-micro text-primary mb-3 animate-slide-r">AI-Curated</p>
           <h1 className="font-editorial text-display-md text-on_surface leading-tight animate-fade-up">
             Explore Events
           </h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-8 py-10">
+      <div className="max-w-7xl mx-auto px-8 lg:px-20 py-8">
         {/* Search bar */}
         <div className="mb-8 animate-fade-up">
           <input

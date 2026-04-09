@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTheme } from './ThemeProvider'
 
 const PICKS = [
   { title: 'Monsoon Beats Festival', meta: 'TONIGHT · MUMBAI', match: 98, tag: 'Music' },
@@ -16,10 +17,14 @@ const GREETINGS = [
 ]
 
 export default function AIConcierge() {
+  const { mode } = useTheme()
+  const isNight = mode === 'night'
   const [open, setOpen] = useState(false)
   const [greeting, setGreeting] = useState(GREETINGS[0])
   const [typing, setTyping] = useState(true)
   const [visibleText, setVisibleText] = useState('')
+
+  const circleTrack = isNight ? '#222840' : '#d8ddef'
 
   const message = "I've curated three events matching your taste profile."
 
@@ -117,7 +122,7 @@ export default function AIConcierge() {
               {/* Circular match score */}
               <div className="relative w-12 h-12 flex-shrink-0">
                 <svg className="w-12 h-12 -rotate-90" viewBox="0 0 48 48">
-                  <circle cx="24" cy="24" r="20" stroke="#222840" strokeWidth="3" fill="none" />
+                  <circle cx="24" cy="24" r="20" stroke={circleTrack} strokeWidth="3" fill="none" />
                   <circle
                     cx="24" cy="24" r="20"
                     stroke="#7c6af7"

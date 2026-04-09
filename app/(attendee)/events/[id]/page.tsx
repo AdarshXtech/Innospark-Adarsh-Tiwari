@@ -1,5 +1,16 @@
-export const runtime = 'edge'
+'use client'
+
+import { useState } from 'react'
+
+const TICKETS = [
+  { type: 'Early Bird',        price: '₹499',   amount: 499,  note: 'Limited' },
+  { type: 'General Admission', price: '₹799',   amount: 799,  note: '' },
+  { type: 'VIP Lounge',        price: '₹1,999', amount: 1999, note: 'Includes F&B' },
+]
+
 export default function EventDetailsPage() {
+  const [selected, setSelected] = useState<string | null>(null)
+  const selectedTicket = TICKETS.find((t) => t.type === selected)
   return (
     <div className="min-h-screen bg-surface">
       {/* Glass nav */}
@@ -111,33 +122,62 @@ export default function EventDetailsPage() {
             <div className="skeuo-raised rounded-2xl p-6 sticky top-24 animate-scale-in delay-200">
               <p className="label-micro text-on_surface_variant mb-4">Select tickets</p>
               <div className="space-y-3">
-                {[
-                  { type: 'Early Bird', price: '₹499', note: 'Limited' },
-                  { type: 'General Admission', price: '₹799', note: '' },
-                  { type: 'VIP Lounge', price: '₹1,999', note: 'Includes F&B' },
-                ].map((ticket) => (
-                  <div
-                    key={ticket.type}
-                    className="bg-surface_container rounded-xl p-4 cursor-pointer hover:bg-surface_container_high transition-all group"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-on_surface text-sm font-medium">{ticket.type}</p>
-                        {ticket.note && (
-                          <p className="label-micro text-primary mt-0.5">{ticket.note}</p>
-                        )}
+                {TICKETS.map((ticket) => {
+                  const isSelected = selected === ticket.type
+                  return (
+                    <div
+                      key={ticket.type}
+                      onClick={() => setSelected(ticket.type)}
+                      className="rounded-xl p-4 cursor-pointer transition-all"
+                      style={{
+                        background: isSelected ? 'rgba(124,106,247,0.12)' : 'var(--surface-mid)',
+                        outline: isSelected ? '1.5px solid rgba(124,106,247,0.6)' : '1px solid rgba(124,106,247,0.08)',
+                        transform: isSelected ? 'scale(1.01)' : 'scale(1)',
+                      }}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2.5">
+                          {/* Radio indicator */}
+                          <div
+                            className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center transition-all"
+                            style={{
+                              border: isSelected ? '2px solid #7c6af7' : '2px solid rgba(255,255,255,0.2)',
+                              background: isSelected ? '#7c6af7' : 'transparent',
+                            }}
+                          >
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                          <div>
+                            <p className="text-on_surface text-sm font-medium">{ticket.type}</p>
+                            {ticket.note && (
+                              <p className="label-micro text-primary mt-0.5">{ticket.note}</p>
+                            )}
+                          </div>
+                        </div>
+                        <p className="font-editorial text-lg" style={{ color: isSelected ? '#7c6af7' : 'var(--text)' }}>
+                          {ticket.price}
+                        </p>
                       </div>
-                      <p className="font-editorial text-lg text-on_surface">{ticket.price}</p>
                     </div>
-                    <button className="btn-primary w-full mt-3 py-2.5 text-white text-xs font-semibold rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                      Select
-                    </button>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="mt-5 pt-5" style={{ borderTop: '1px solid rgba(124,106,247,0.12)' }}>
-                <a href="/checkout/1" className="btn-primary block text-center py-3.5 text-white font-semibold text-sm rounded-full">
+                {selectedTicket ? (
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="label-micro text-on_surface_variant">Selected</span>
+                    <span className="text-sm font-semibold text-primary">{selectedTicket.type} · {selectedTicket.price}</span>
+                  </div>
+                ) : (
+                  <p className="label-micro text-on_surface_variant text-center mb-4">Pick a ticket tier above</p>
+                )}
+                <a
+                  href={selected ? '/checkout/1' : '#'}
+                  onClick={(e) => { if (!selected) e.preventDefault() }}
+                  className="btn-primary block text-center py-3.5 text-white font-semibold text-sm rounded-full transition-all"
+                  style={{ opacity: selected ? 1 : 0.4, pointerEvents: selected ? 'auto' : 'none' }}
+                >
                   Proceed to Checkout
                 </a>
                 <p className="label-micro text-on_surface_variant text-center mt-3">
