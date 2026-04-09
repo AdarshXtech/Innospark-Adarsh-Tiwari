@@ -1,6 +1,13 @@
 import { Resend } from 'resend'
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+let _resend: Resend | null = null
+
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return _resend
+}
 
 export async function sendBookingConfirmation(
   email: string,
@@ -8,7 +15,7 @@ export async function sendBookingConfirmation(
   eventTitle: string,
   qrCode: string
 ) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'LocalTix <noreply@localtix.com>',
     to: email,
     subject: `Your ticket for ${eventTitle} is ready!`,
