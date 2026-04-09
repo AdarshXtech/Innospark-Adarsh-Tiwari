@@ -55,14 +55,8 @@ export default async function Home() {
           <LiveClock />
           <a href="/explore" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Explore</a>
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Admin</a>
-          {user ? (
-            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">{user?.email}</a>
-          ) : (
-            <>
-              <a href="/login" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Sign In</a>
-              <a href="/signup" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">Get Started</a>
-            </>
-          )}
+          <a href="/login" className="text-on_surface_variant hover:text-on_surface text-sm font-medium transition-colors">Sign In</a>
+          <a href="/signup" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">Get Started</a>
         </div>
       </nav>
 
