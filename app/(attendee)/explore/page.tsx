@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
+import LogoutButton from '@/components/LogoutButton'
 
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80'
 
@@ -36,7 +37,7 @@ export default async function ExplorePage() {
           <a href="/admin" className="text-on_surface_variant hover:text-on_surface text-sm transition-colors">Admin</a>
           <a href="/create-event" className="btn-primary text-white text-sm font-semibold px-5 py-2 rounded-full">+ Create Event</a>
           {user ? (
-            <a href="/my-tickets" className="text-on_surface_variant hover:text-on_surface text-sm transition-colors">{user.email}</a>
+            <LogoutButton email={user.email!} />
           ) : (
             <a href="/login" className="label-micro text-primary hover:text-primary_container transition-colors">Sign In</a>
           )}
